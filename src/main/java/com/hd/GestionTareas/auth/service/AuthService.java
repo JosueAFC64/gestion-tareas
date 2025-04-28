@@ -51,7 +51,7 @@ public class AuthService {
 
         var cookie = new jakarta.servlet.http.Cookie("USER_SESSION", token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge((int) (jwtExpiration)/1000);
 
