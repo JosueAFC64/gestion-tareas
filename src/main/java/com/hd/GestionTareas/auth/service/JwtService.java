@@ -36,7 +36,8 @@ public class JwtService {
         return Jwts.builder()
                 .claims(Map.of(
                         "nombres", user.getNombres(),
-                        "apellidos", user.getApellidos()
+                        "apellidos", user.getApellidos(),
+                        "rol", user.getRol()
                 ))
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
