@@ -2,14 +2,10 @@ package com.hd.GestionTareas.auth.service;
 
 import com.hd.GestionTareas.auth.controller.AuthRequest;
 import com.hd.GestionTareas.auth.controller.RegisterRequest;
-import com.hd.GestionTareas.auth.controller.UserDto;
 import com.hd.GestionTareas.auth.repository.Token;
 import com.hd.GestionTareas.auth.repository.TokenRepository;
 import com.hd.GestionTareas.user.repository.User;
 import com.hd.GestionTareas.user.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +60,7 @@ public class AuthService {
                 .apellidos(request.apellidos())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
+                .rol(request.rol())
                 .build();
 
         repository.save(user);
@@ -90,23 +87,6 @@ public class AuthService {
             });
             tokenRepository.saveAll(validUserTokens);
         }
-    }
-
-    public UserDto getUserData(HttpServletRequest request){
-        Cookie[] cookies = request.getCookies();
-        if(cookies != null){
-            for(Cookie cookie : cookies){
-                if(cookie.getName().equals("USER_SESSION")){
-                    Claims claims = jwtService.extractAllClaims(cookie.getValue());
-                    return new UserDto(
-                            claims.get("nombres", String.class),
-                            claims.get("apellidos", String.class),
-                            claims.getSubject()
-                    );
-                }
-            }
-        }
-        return null;
     }
 
 }

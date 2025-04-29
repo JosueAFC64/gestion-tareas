@@ -4,10 +4,8 @@ import com.hd.GestionTareas.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -26,6 +24,12 @@ public class AuthController {
     public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
         service.register(request);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Test");
     }
 
 }
