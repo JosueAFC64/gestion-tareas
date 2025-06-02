@@ -20,6 +20,12 @@ public class AppConfig {
 
     private final UserRepository repository;
 
+    /**
+     * Crea y configura un UserDetailsService personalizado para Spring Security.
+     * Carga los detalles del usuario desde la base de datos usando el email como nombre de usuario.
+     *
+     * @return Una implementación de UserDetailsService que busca usuarios por email
+     */
     @Bean
     public UserDetailsService userDetailsService(){
         return username -> {
@@ -34,6 +40,14 @@ public class AppConfig {
         };
     }
 
+    /**
+     * Configura el AuthenticationManager principal para la aplicación.
+     * Utiliza DaoAuthenticationProvider con el UserDetailsService personalizado y el codificador de contraseñas.
+     *
+     * @param userDetailsService El servicio para cargar detalles de usuario
+     * @param passwordEncoder El codificador de contraseñas a utilizar
+     * @return AuthenticationManager configurado para la autenticación
+     */
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder){
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -42,6 +56,12 @@ public class AppConfig {
         return new ProviderManager(authProvider);
     }
 
+    /**
+     * Proporciona el codificador de contraseñas que se usará en la aplicación.
+     * Utiliza el algoritmo BCrypt para el hashing seguro de contraseñas.
+     *
+     * @return Instancia de BCryptPasswordEncoder como implementación de PasswordEncoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

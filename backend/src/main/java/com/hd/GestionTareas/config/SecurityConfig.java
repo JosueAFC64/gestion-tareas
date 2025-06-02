@@ -2,6 +2,8 @@ package com.hd.GestionTareas.config;
 
 import com.hd.GestionTareas.auth.repository.Token;
 import com.hd.GestionTareas.auth.repository.TokenRepository;
+import com.hd.GestionTareas.error.CustomAccessDeniedHandler;
+import com.hd.GestionTareas.error.CustomAuthenticationEntryPoint;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,15 +38,31 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    /**
+     * Configura la cadena principal de filtros de seguridad para la aplicación.
+     * Define las políticas de seguridad, manejo de excepciones, control de acceso,
+     * gestión de sesiones y configuración del JWT.
+     *
+     * @param http Objeto HttpSecurity para configurar las reglas de seguridad
+     * @return SecurityFilterChain completamente configurado
+     * @throws Exception Si es que ocurre algún error durante la configuración
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception{
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
+                .exceptionHandling(exception ->
+                        exception
+                                .authenticationEntryPoint(customAuthenticationEntryPoint)
+                                .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .authorizeHttpRequests(req ->
                         req
-                            .requestMatchers("/api/v1/auth/**").permitAll()
+                            .requestMatchers("/auth/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
@@ -52,19 +70,29 @@ public class SecurityConfig {
                 .authenticationManager(authenticationManager)
                 .logout(logout ->
                         logout
-                                .logoutUrl("/api/v1/auth/logout")
+                                .logoutUrl("/auth/logout")
                                 .addLogoutHandler(this::logout)
                                 .deleteCookies("USER_SESSION")
                                 .invalidateHttpSession(true)
-                                .logoutSuccessHandler((request, response, authentication) -> {
-                                    response.setStatus(HttpStatus.OK.value());
-                                })
+                                .logoutSuccessHandler((request, response, authentication) ->
+                                        response.setStatus(HttpStatus.OK.value()))
                 );
 
 
         return http.build();
     }
 
+    /**
+     * Maneja el proceso de logout invalidando el token JWT almacenado en las cookies.
+     * Realiza las siguientes acciones:
+     * 1. Busca la cookie de sesión USER_SESSION
+     * 2. Si existe, marca el token como expirado y revocado en la base de datos
+     * 3. Limpia el contexto de seguridad de Spring
+     *
+     * @param request Objeto HttpServletRequest que contiene las cookies
+     * @param response Objeto HttpServletResponse
+     * @param authentication Objeto Authentication con los detalles del usuario autenticado
+     */
     private void logout(
             final HttpServletRequest request,
             final HttpServletResponse response,
@@ -90,6 +118,13 @@ public class SecurityConfig {
         SecurityContextHolder.clearContext();
     }
 
+    /**
+     * Configura la política CORS (Cross-Origin Resource Sharing) para la aplicación.
+     * Permite solicitudes desde la URL del frontend con los métodos HTTP comunes
+     * y los encabezados necesarios para autenticación y contenido JSON.
+     *
+     * @return CorsConfigurationSource configurado con los permisos CORS
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

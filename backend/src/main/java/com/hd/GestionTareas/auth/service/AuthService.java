@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,20 +31,28 @@ public class AuthService {
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
 
-    public void authenticate(AuthRequest request, HttpServletResponse response){
+    /**
+     * Autentica al usuario, genera un token JWT y lo agrega en una Cookie
+     *
+     * @param request Datos necesarios para la autenticación (email y contraseña)
+     * @param response Objeto HttpServletResponse para agregar cookies
+     * @throws UsernameNotFoundException Si el usuario no existe
+     */
+    @Transactional
+    public void authenticate(AuthRequest request, HttpServletResponse response) {
         User user = repository.findByEmail(request.email())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
                         request.password()
                 )
         );
-
         final String token = jwtService.generateToken(user);
 
         revokeAllUserTokens(user);
-        saveUserToken(user,token);
+        saveUserToken(user, token);
 
         var cookie = new jakarta.servlet.http.Cookie("USER_SESSION", token);
         cookie.setHttpOnly(true);
@@ -54,18 +63,12 @@ public class AuthService {
         response.addCookie(cookie);
     }
 
-    public void register(RegisterRequest request){
-        final User user = User.builder()
-                .nombres(request.nombres())
-                .apellidos(request.apellidos())
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .rol(request.rol())
-                .build();
-
-        repository.save(user);
-    }
-
+    /**
+     * Guarda el token del usuario en la Base de Datos
+     *
+     * @param user Objeto {@link com.hd.GestionTareas.user.repository.User} (solo almacena el ID del usuario)
+     * @param jwtToken El JWT generado del usuario
+     */
     private void saveUserToken(User user, String jwtToken){
         final Token token = Token.builder()
                 .user(user)
@@ -78,6 +81,11 @@ public class AuthService {
         tokenRepository.save(token);
     }
 
+    /**
+     * Invalida todos los token de un usuario
+     *
+     * @param user Objeto {@link com.hd.GestionTareas.user.repository.User} del usuario a invalidar sus tokens
+     * */
     private void revokeAllUserTokens(final User user){
         final List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(user.getId());
         if(!validUserTokens.isEmpty()){

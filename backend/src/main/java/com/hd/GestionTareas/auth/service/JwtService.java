@@ -21,7 +21,13 @@ public class JwtService {
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
 
-    public String extractUsername(String token){
+    /**
+     * Extrae el subject (email) del token
+     *
+     * @param token JWT del que se tiene que extraer el subject
+     * @return El texto plano del subject (email)
+     */
+    public String extractUsername(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -30,13 +36,26 @@ public class JwtService {
                 .getSubject();
     }
 
-    public String generateToken(final User user){return buildToken(user, jwtExpiration);}
+    /**
+     * Genera un nuevo JWT
+     *
+     * @param user Usuario al que se le generará el token
+     * @return El resultado del servicio buildToken
+     * */
+    public String generateToken(final User user) {
+        return buildToken(user, jwtExpiration);
+    }
 
-    public String buildToken(final User user, final long expiration){
+    /**
+     * Construye el JWT (rol, email, iat, exp)
+     *
+     * @param user Usuario al que se le construirá el token
+     * @param expiration Tiempo de duración del token
+     * @return JWT construido
+     * */
+    public String buildToken(final User user, final long expiration) {
         return Jwts.builder()
                 .claims(Map.of(
-                        "nombres", user.getNombres(),
-                        "apellidos", user.getApellidos(),
                         "rol", user.getRol()
                 ))
                 .subject(user.getEmail())
@@ -46,16 +65,13 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails){
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token){
-        return extractExpiration(token).before(new Date());
-    }
-
-    public Claims extractAllClaims(String token) {
+    /**
+     * Extrae el Payload del JWT
+     *
+     * @param token El JWT
+     * @return El payload del JWT
+     */
+    public Claims extractPayload(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -63,6 +79,36 @@ public class JwtService {
                 .getPayload();
     }
 
+    /**
+     * Verifica si un token JWT es válido para un usuario específico.
+     *
+     * @param token Token JWT a validar.
+     * @param userDetails Detalles del usuario autenticado.
+     * @return `true` si el token es válido (coincide con el usuario y no está expirado),
+     *         `false` en caso contrario.
+     * @throws io.jsonwebtoken.JwtException Si el token está malformado o es inválido.
+     */
+    public boolean isTokenValid(String token, UserDetails userDetails){
+        final String username = extractUsername(token);
+        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    }
+
+    /**
+     * Verifica si un token JWT ha expirado.
+     *
+     * @param token Token JWT a validar.
+     * @return `true` si el token está expirado, `false` si aún es válido.
+     */
+    private boolean isTokenExpired(String token){
+        return extractExpiration(token).before(new Date());
+    }
+
+    /**
+     * Extrae la fecha de expiración (claim "exp") del token JWT.
+     *
+     * @param token Token JWT del cual extraer la fecha.
+     * @return Fecha de expiración del token.
+     **/
     private Date extractExpiration(String token){
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -72,6 +118,11 @@ public class JwtService {
                 .getExpiration();
     }
 
+    /**
+     * Genera la clave secreta (SecretKey) usada para firmar/verificar tokens JWT.
+     *
+     * @return Clave secreta en formato HMAC-SHA.
+     */
     private SecretKey getSigningKey(){
         final byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
