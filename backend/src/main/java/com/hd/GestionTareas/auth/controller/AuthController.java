@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -17,12 +17,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Void> authenticate(@RequestBody AuthRequest request, HttpServletResponse response) {
         service.authenticate(request, response);
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
-        service.register(request);
         return ResponseEntity.noContent().build();
     }
 

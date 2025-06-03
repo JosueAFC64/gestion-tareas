@@ -22,6 +22,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Intercepta las solicitudes entrantes, extrae el JWT de la cookie y lo válida
+ * -
+ * Si el JWT es válido, crea un objeto de autenticación que representa al usuario y lo almacena
+ * en el SecurityContextHolder para ser utilizado por Spring en el proceso de autorización
+ * -
+ * Si el JWT no es válido, rechaza la solicitud
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -33,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     private static final List<String> PUBLIC_PATHS = List.of(
-            "/", "/api/v1/auth/login", "/api/v1/auth/register"
+            "/", "/auth/login", "/auth/register"
     );
 
     @Override
