@@ -1,0 +1,25 @@
+<body class="cuerpo">
+  <header>
+    <div class="container">
+      <div class="usuario">
+        <img src="/user-icon.svg" alt="">
+        <div class="user-name">Oscar Arotinco</div>
+      </div>
+      <div class="barra-buscar">
+        <input type="text" id="search-input" placeholder="Buscar materiales...">
+        <button id="btn-buscar"><i class="fas fa-search">Buscar</i></button>
+      </div>
+    </div>
+  </header>
+  <nav>
+    <div class="container">
+      <ul>
+        <li><a [routerLink]="['./principal']">Inicio</a></li>
+        <li><a style="cursor: pointer" (click)="materialModal()">Agregar Material</a></li>
+        <li><a [routerLink]="['./materiales']">Mis Materiales</a></li>
+        <li><a [routerLink]="['./ayuda']">Ayuda</a></li>
+      </ul>
+    </div>
+  </nav>
+  <router-outlet></router-outlet>
+</body>

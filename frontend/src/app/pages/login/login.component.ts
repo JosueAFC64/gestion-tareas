@@ -7,7 +7,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card'
-import { RouterModule } from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
+import {routes} from '../../app.routes';
 
 @Component({
   selector: 'app-login',
@@ -27,17 +28,20 @@ import { RouterModule } from '@angular/router';
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private auth: AuthService) {
+  constructor(private fb: FormBuilder, private auth: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
   }
 
+
   onSubmit() {
     if (this.loginForm.invalid) return;
     this.auth.login(this.loginForm.value).subscribe({
-      next: () => alert('Login exitoso'),
+      next: () => {
+        this.router.navigate(['inicio/principal'])
+        alert('Login exitoso')},
       error: () => alert('Error al iniciar sesión')
     });
   }
