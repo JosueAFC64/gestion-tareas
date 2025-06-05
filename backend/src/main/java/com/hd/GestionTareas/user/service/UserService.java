@@ -1,6 +1,7 @@
 package com.hd.GestionTareas.user.service;
 
 import com.hd.GestionTareas.auth.controller.RegisterRequest;
+import com.hd.GestionTareas.user.controller.DocenteResponse;
 import com.hd.GestionTareas.user.controller.UserDataResponse;
 import com.hd.GestionTareas.auth.service.JwtService;
 import com.hd.GestionTareas.user.repository.User;
@@ -13,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +79,15 @@ public class UserService {
             }
         }
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    public List<DocenteResponse> getDocentes(){
+        return repository.findAll()
+                .stream()
+                .filter(u -> Objects.equals(u.getRol(), "DOCENTE"))
+                .map(user -> new DocenteResponse(user.getId(), user.getNombres()))
+                .toList();
     }
 
     private UserDataResponse toDataResponse(User user) {
