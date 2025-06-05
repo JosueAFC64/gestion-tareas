@@ -1,7 +1,6 @@
 package com.hd.GestionTareas.auth.service;
 
 import com.hd.GestionTareas.auth.controller.AuthRequest;
-import com.hd.GestionTareas.auth.controller.RegisterRequest;
 import com.hd.GestionTareas.auth.repository.Token;
 import com.hd.GestionTareas.auth.repository.TokenRepository;
 import com.hd.GestionTareas.user.repository.User;
@@ -10,9 +9,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,7 @@ public class AuthService {
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final PasswordEncoder passwordEncoder;
+    private final LoginAttemptService loginAttemptService;
 
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
@@ -40,15 +40,35 @@ public class AuthService {
      */
     @Transactional
     public void authenticate(AuthRequest request, HttpServletResponse response) {
-        User user = repository.findByEmail(request.email())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.email(),
-                        request.password()
-                )
-        );
+        if(request.email() == null || request.password() == null || request.password().isBlank()) {
+            throw new IllegalArgumentException("Email o contraseña inválidos");
+        }
+
+        User user = repository.findByEmail(request.email())
+                .orElseThrow(() -> {
+                    loginAttemptService.loginFailed(request.email());
+                    return new UsernameNotFoundException("Usuario no encontrado");
+                });
+
+        if(loginAttemptService.isBlocked(user.getEmail())){
+            throw new LockedException("La cuenta está temporalmente bloqueada por demasiados intentos fallidos, intente de nuevo en 1 minutos");
+        }
+
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.email(),
+                            request.password()
+                    )
+            );
+        } catch (BadCredentialsException e){
+            loginAttemptService.loginFailed(request.email());
+            throw new BadCredentialsException("Usuario o contraseña incorrectos");
+        }
+
+        loginAttemptService.loginSucceeded(request.email());
+
         final String token = jwtService.generateToken(user);
 
         revokeAllUserTokens(user);
