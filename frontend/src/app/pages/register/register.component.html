@@ -1,5 +1,7 @@
-<mat-card class="register-card">
-  <h2>Registro</h2>
+<div class="background"><mat-card class="register-card">
+  <h2>Registrarse en </h2>
+  <img src="assets/img/logo.png" class="logo" alt="l">
+
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Nombres</mat-label>
@@ -34,3 +36,4 @@
     </button>
   </form>
 </mat-card>
+</div>

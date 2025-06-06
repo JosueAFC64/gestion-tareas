@@ -4,7 +4,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #2196f3, #21cbf3);
+  background-image: url('/assets/img/fondologinregister.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+}
+.logo{
+  height: 140px;
+  width: 300px;
+  padding-left: 3.5em;
+  padding-right: 3.5em;
+  padding-bottom: 1.5em;
 }
 
 .login-container {
@@ -17,20 +28,21 @@
   width: 100%;
   padding: 32px;
   border-radius: 12px;
-  background-color: white;
+  background-color: #ffffff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
 
 .title {
   text-align: center;
   margin-bottom: 24px;
-  color: #0d47a1;
+  color: #333336;
   font-weight: bold;
 }
 
 .full-width {
   width: 100%;
   margin-bottom: 16px;
+
 }
 
 .register-link {
@@ -41,7 +53,7 @@
 }
 
 .register-link a {
-  color: #1976d2;
+  color: #322f2f;
   text-decoration: none;
   font-weight: 600;
   cursor: pointer;
