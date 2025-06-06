@@ -1,0 +1,73 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  button{
+    color: #4a6da7;
+    font-weight: bold;
+  }
+}
+
+.modal-titulo {
+  font-size: 20px;
+  color: #4a6da7;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #EDEDEDFF;
+  border-radius: 4px;
+}
+
+.form-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #EDEDEDFF;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.btn-primary {
+  background-color: #4a6da7;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px;
+}
+

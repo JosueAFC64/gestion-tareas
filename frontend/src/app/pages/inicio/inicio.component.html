@@ -1,0 +1,18 @@
+<main class="container">
+  <section>
+    <h2 class="section-titulo">Materiales Educativos</h2>
+    <div class="filtros" id="filtro-categoria">
+      <button (click)="setActive('todos')" class="filtro-btn active" id="todos">Todos</button>
+      <button (click)="setActive('matematicas')" class="filtro-btn" id="matematicas">Matemáticas</button>
+      <button (click)="setActive('ciencias')" class="filtro-btn" id="ciencias">Ciencias</button>
+      <button (click)="setActive('historia')" class="filtro-btn" id="historia">Historia</button>
+      <button (click)="setActive('idiomas')" class="filtro-btn" id="idiomas">Idiomas</button>
+      <button (click)="setActive('tecnologia')" class="filtro-btn" id="tecnologia">Tecnología</button>
+    </div>
+  </section>
+  <section>
+    <div class="materiales-grid" id="materialesGrid">
+      <div class="no-materiales">No hay materiales disponibles. ¡Agrega uno nuevo!</div>
+    </div>
+  </section>
+</main>
