@@ -37,6 +37,9 @@ public class RecursosEducativo {
     @Column(nullable = false)
     private String url;
 
+    @Column(name = "google_drive_file_id")
+    private String googleDriveFileId;
+
     @Column(updatable = false)
     @CreationTimestamp
     private LocalDateTime fechaCreacion;

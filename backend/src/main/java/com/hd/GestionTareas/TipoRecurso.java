@@ -1,16 +1,11 @@
 package com.hd.GestionTareas;
 
 public enum TipoRecurso {
-    DOCUMENTO_PDF,
-    DOCUMENTO_DOC,
-    DOCUMENTO_DOCX,
-    VIDEO_MP4,
-    VIDEO_YOUTUBE,
-    IMAGEN_JPG,
-    IMAGEN_PNG,
-    ENLACE_WEB,
-    PRESENTACION_PPT,
-    PRESENTACION_PPTX,
-    HOJA_CALCULO_XLS,
-    HOJA_CALCULO_XLSX
+    PDF,
+    PPTX,
+    XLSX,
+    DOCX,
+    VIDEO,
+    ENLACE,
+    IMAGEN
 }
