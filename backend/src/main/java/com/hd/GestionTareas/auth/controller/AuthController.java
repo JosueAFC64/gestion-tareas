@@ -40,4 +40,9 @@ public class AuthController {
 
     }
 
+    @PostMapping("/register-user")
+    public ResponseEntity<Void> registerUser(@RequestBody RegisterRequest request) {
+        service.registerUser(request);
+        return ResponseEntity.noContent().build();
+    }
 }
