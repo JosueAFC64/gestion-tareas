@@ -1,6 +1,5 @@
 package com.hd.GestionTareas.user.controller;
 
-import com.hd.GestionTareas.auth.controller.RegisterRequest;
 import com.hd.GestionTareas.error.ErrorResponse;
 import com.hd.GestionTareas.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,12 +19,7 @@ public class UserController {
 
     private final UserService service;
 
-    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
-    @PostMapping("/register-user")
-    public ResponseEntity<Void> registerUser(@RequestBody RegisterRequest request) {
-        service.registerUser(request);
-        return ResponseEntity.noContent().build();
-    }
+
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/session/user-data")
