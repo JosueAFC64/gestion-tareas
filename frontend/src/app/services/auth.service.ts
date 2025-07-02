@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly apiUrl = 'http://localhost:8080/api/v1/auth';
+  private readonly apiUrl = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
 
@@ -18,6 +18,10 @@ export class AuthService {
 
   register(data: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, data);
+  }
+
+  createMaterial(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/recursos-educativos/with-file`, data);
   }
 
   test(): Observable<any> {
