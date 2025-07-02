@@ -1,5 +1,6 @@
 package com.hd.GestionTareas.recursoseducativos.controller;
 
+import com.hd.GestionTareas.TipoRecurso;
 import com.hd.GestionTareas.error.ErrorResponse;
 import com.hd.GestionTareas.recursoseducativos.service.RecursoEducativoService;
 import jakarta.persistence.EntityNotFoundException;
@@ -98,6 +99,21 @@ public class RecursoEducativoController {
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse(400, "Bad request", e.getMessage()));
         }
+    }
+
+    @GetMapping("/filtrar")
+    public ResponseEntity<List<RESummaryResponse>> filtrarRecursosEducativos(
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) TipoRecurso tipo,
+            @RequestParam(required = false) Long cursoId,
+            @RequestParam(required = false) Long creadorId
+    ) {
+        return ResponseEntity.ok(service.filtrarRecursosEducativos(titulo, tipo, cursoId, creadorId));
+    }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<List<RESummaryResponse>> buscarPorTitulo(@RequestParam String titulo){
+        return ResponseEntity.ok(service.buscarPorTitulo(titulo));
     }
 
     @DeleteMapping("/{id}")

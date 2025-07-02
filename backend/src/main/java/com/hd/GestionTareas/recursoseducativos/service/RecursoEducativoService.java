@@ -1,5 +1,6 @@
 package com.hd.GestionTareas.recursoseducativos.service;
 
+import com.hd.GestionTareas.TipoRecurso;
 import com.hd.GestionTareas.curso.repository.Curso;
 import com.hd.GestionTareas.curso.repository.CursoRepository;
 import com.hd.GestionTareas.recursoseducativos.controller.RERequest;
@@ -188,4 +189,20 @@ public class RecursoEducativoService {
 
         repository.delete(recursoEducativo);
     }
+
+    public List<RESummaryResponse> buscarPorTitulo(String titulo){
+        return repository.findByTituloContainingIgnoreCase(titulo);
+    }
+
+    public List<RESummaryResponse> filtrarRecursosEducativos(String titulo, TipoRecurso tipo, Long cursoId, Long creadorId) {
+        List<RecursosEducativo> recursos = repository.findAll();
+        return recursos.stream()
+                .filter(r -> titulo == null || r.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
+                .filter(r -> tipo == null || r.getTipo() == tipo)
+                .filter(r -> cursoId == null || (r.getCurso() != null && r.getCurso().getId().equals(cursoId)))
+                .filter(r -> creadorId == null || (r.getCreador() != null && r.getCreador().getId().equals(creadorId)))
+                .map(r -> new RESummaryResponse(r.getId(), r.getTitulo()))
+                .toList();
+    }
+
 }
