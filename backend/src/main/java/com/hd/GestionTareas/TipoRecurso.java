@@ -5,7 +5,6 @@ public enum TipoRecurso {
     PPTX,
     XLSX,
     DOCX,
-    VIDEO,
-    ENLACE,
-    IMAGEN
+    MP4,
+    JPG
 }
