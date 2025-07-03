@@ -60,29 +60,35 @@ export class ModalAgregarMaterialComponent {
   }
 
   onSubmit(): void {
-    const formData = new FormData();
-    formData.append('titulo', this.materialForm.get('titulo')?.value)
-    formData.append('descripcion', this.materialForm.get('descripcion')?.value)
-    formData.append('url', '')
-    formData.append('cursoId', this.materialForm.get('cursoId')?.value)
-    formData.append('creadorId', '3')
-    formData.append('tipo', this.materialForm.get('tipo')?.value)
+    // Crear el objeto RERequest como JSON
+    const requestData = {
+      titulo: this.materialForm.get('titulo')?.value,
+      descripcion: this.materialForm.get('descripcion')?.value,
+      tipo: this.materialForm.get('tipo')?.value,
+      url: '',
+      creadorId: 3,
+      cursoId: parseInt(this.materialForm.get('cursoId')?.value)
+    };
 
+    const formData = new FormData();
+    
+    // Agregar el objeto request como JSON string
+    formData.append('request', new Blob([JSON.stringify(requestData)], { type: 'application/json' }));
+    
+    // Agregar el archivo si existe
     if (this.selectedFile) {
       formData.append('file', this.selectedFile, this.selectedFile.name);
     }
 
-    console.log(formData.get('titulo'))
-    console.log(formData.get('descripcion'))
-    console.log(formData.get('url'))
-    console.log(formData.get('cursoId'))
-    console.log(formData.get('creadorId'))
-    console.log(formData.get('tipo'))
-    console.log(formData.get('file'))
+    console.log('Request data:', requestData);
+    console.log('File:', this.selectedFile);
 
     this.auth.createMaterial(formData)
       .subscribe({
-        next: res => console.log('Recurso creado', res),
+        next: res => {
+          console.log('Recurso creado', res);
+          this._matDialogRef.close();
+        },
         error: err => console.error('Error al crear recurso', err)
       });
   }
