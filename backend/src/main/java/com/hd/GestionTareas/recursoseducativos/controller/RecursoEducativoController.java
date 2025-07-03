@@ -38,7 +38,7 @@ public class RecursoEducativoController {
         }
     }
 
-    @PreAuthorize("hasAuthority('ADMINISTRADOR')")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'DOCENTE)")
     @PostMapping("/with-file")
     public ResponseEntity<?> createRecursoEducativoWithFile(
             @RequestPart("request") RERequest request,
