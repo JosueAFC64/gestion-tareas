@@ -56,7 +56,9 @@ public class JwtService {
     public String buildToken(final User user, final long expiration) {
         return Jwts.builder()
                 .claims(Map.of(
-                        "rol", user.getRol()
+                        "rol", user.getRol(),
+                        "id", user.getId(),
+                        "name", user.getNombres()
                 ))
                 .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
@@ -128,4 +130,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    public Long extractUserId(String token) {
+        return extractPayload(token).get("id", Long.class);
+    }
 }

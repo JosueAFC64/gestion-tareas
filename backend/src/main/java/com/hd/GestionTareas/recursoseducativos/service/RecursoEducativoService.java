@@ -1,6 +1,7 @@
 package com.hd.GestionTareas.recursoseducativos.service;
 
 import com.hd.GestionTareas.TipoRecurso;
+import com.hd.GestionTareas.auth.service.JwtService;
 import com.hd.GestionTareas.curso.repository.Curso;
 import com.hd.GestionTareas.curso.repository.CursoRepository;
 import com.hd.GestionTareas.recursoseducativos.controller.RERequest;
@@ -11,6 +12,8 @@ import com.hd.GestionTareas.recursoseducativos.repository.RecursosEducativo;
 import com.hd.GestionTareas.user.repository.User;
 import com.hd.GestionTareas.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,14 +34,20 @@ public class RecursoEducativoService {
     private final CursoRepository cursoRepository;
     private final UserRepository userRepository;
     private final GoogleDriveService driveService;
+    private final JwtService jwtService;
 
     /**
      * Crea un nuevo recurso educativo para un curso
      *
      * @param request datos necesarios para crear un libro
      */
-    public void createRecursoEducativo(RERequest request) {
-        User creador = userRepository.findById(request.creadorId())
+    public void createRecursoEducativo(RERequest request, HttpServletRequest httpRequest) {
+        String token = extractTokenFromCookies(httpRequest);
+        if (token == null) {
+            throw new SecurityException("Token no encontrado");
+        }
+        Long userId = jwtService.extractUserId(token);
+        User creador = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
         Curso curso = cursoRepository.findById(request.cursoId())
                 .orElseThrow(() -> new EntityNotFoundException("Curso no encontrado"));
@@ -58,11 +68,16 @@ public class RecursoEducativoService {
      * Crea un nuevo recurso educativo con archivo para un curso
      *
      * @param request datos necesarios para crear un recurso
-     * @param file archivo a subir
+     * @param file    archivo a subir
      */
     @Transactional
-    public void createRecursoEducativoWithFile(RERequest request, MultipartFile file) throws IOException, GeneralSecurityException {
-        User creador = userRepository.findById(request.creadorId())
+    public void createRecursoEducativoWithFile(RERequest request, MultipartFile file, HttpServletRequest httpRequest) throws IOException, GeneralSecurityException {
+        String token = extractTokenFromCookies(httpRequest);
+        if (token == null) {
+            throw new SecurityException("Token no encontrado");
+        }
+        Long userId = jwtService.extractUserId(token);
+        User creador = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
         Curso curso = cursoRepository.findById(request.cursoId())
                 .orElseThrow(() -> new EntityNotFoundException("Curso no encontrado"));
@@ -84,14 +99,24 @@ public class RecursoEducativoService {
         repository.save(recursoEducativoNuevo);
     }
 
+    private String extractTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+        for (Cookie cookie : request.getCookies()) {
+            if ("USER_SESSION".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
     /**
      * Actualiza los datos de un recurso educativo
      *
-     * @param id El id del recurso educativo a actualizar
+     * @param id      El id del recurso educativo a actualizar
      * @param request Datos disponibles para actualizar
      */
     public void updateRecursoEducativo(Long id, REUpdateRequest request) {
-        if(id == null || id <= 0) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException("Id del recurso no es válido");
         }
 
@@ -113,12 +138,12 @@ public class RecursoEducativoService {
     /**
      * Actualiza un recurso educativo y su archivo
      *
-     * @param id El id del recurso educativo a actualizar
+     * @param id      El id del recurso educativo a actualizar
      * @param request Datos disponibles para actualizar
-     * @param file Nuevo archivo a subir
+     * @param file    Nuevo archivo a subir
      */
     public void updateRecursoEducativoWithFile(Long id, REUpdateRequest request, MultipartFile file) throws IOException, GeneralSecurityException {
-        if(id == null || id <= 0) {
+        if (id == null || id <= 0) {
             throw new IllegalArgumentException("Id del recurso no es válido");
         }
 
@@ -166,10 +191,15 @@ public class RecursoEducativoService {
         List<RecursosEducativo> recursosEducativo = repository.findByCurso_Id(cursoId);
 
         return recursosEducativo
-                .stream()
-                .map(recursoEducativo -> new RESummaryResponse(
-                        recursoEducativo.getId(),
-                        recursoEducativo.getTitulo()
+                .stream().map(re -> new RESummaryResponse(
+                        re.getId(),
+                        re.getTitulo(),
+                        re.getDescripcion(),
+                        re.getTipo(),
+                        re.getUrl(),
+                          re.getCreador().getNombres(),
+                        re.getCurso().getNombre(),
+                        re.getFechaCreacion()
                 )).toList();
     }
 
@@ -190,19 +220,12 @@ public class RecursoEducativoService {
         repository.delete(recursoEducativo);
     }
 
-    public List<RESummaryResponse> buscarPorTitulo(String titulo){
+    public List<RESummaryResponse> buscarPorTitulo(String titulo) {
         return repository.findByTituloContainingIgnoreCase(titulo);
     }
 
     public List<RESummaryResponse> filtrarRecursosEducativos(String titulo, TipoRecurso tipo, Long cursoId, Long creadorId) {
-        List<RecursosEducativo> recursos = repository.findAll();
-        return recursos.stream()
-                .filter(r -> titulo == null || r.getTitulo().toLowerCase().contains(titulo.toLowerCase()))
-                .filter(r -> tipo == null || r.getTipo() == tipo)
-                .filter(r -> cursoId == null || (r.getCurso() != null && r.getCurso().getId().equals(cursoId)))
-                .filter(r -> creadorId == null || (r.getCreador() != null && r.getCreador().getId().equals(creadorId)))
-                .map(r -> new RESummaryResponse(r.getId(), r.getTitulo()))
-                .toList();
+        return repository.filtrarResumen(titulo, tipo, cursoId, creadorId);
     }
 
 }

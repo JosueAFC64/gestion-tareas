@@ -6,6 +6,8 @@ import com.hd.GestionTareas.auth.repository.Token;
 import com.hd.GestionTareas.auth.repository.TokenRepository;
 import com.hd.GestionTareas.user.repository.User;
 import com.hd.GestionTareas.user.repository.UserRepository;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -155,5 +157,23 @@ public class AuthService {
             tokenRepository.saveAll(validUserTokens);
         }
     }
+    public User getAuthenticatedUser(HttpServletRequest request) {
+        String token = extractTokenFromCookies(request);
+        if (token == null) throw new SecurityException("Token no encontrado");
 
+        Long userId = jwtService.extractUserId(token);
+
+        return repository.findById(userId)
+                .orElseThrow(() -> new SecurityException("Usuario no encontrado"));
+    }
+
+    private String extractTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+        for (Cookie cookie : request.getCookies()) {
+            if ("USER_SESSION".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
 }
