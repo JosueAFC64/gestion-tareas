@@ -4,6 +4,7 @@ import com.hd.GestionTareas.TipoRecurso;
 import com.hd.GestionTareas.error.ErrorResponse;
 import com.hd.GestionTareas.recursoseducativos.service.RecursoEducativoService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +29,9 @@ public class RecursoEducativoController {
     private final GoogleDriveService driveService;
 
     @PostMapping
-    public ResponseEntity<?> createRecursoEducativo(@RequestBody RERequest request){
+    public ResponseEntity<?> createRecursoEducativo(@RequestBody RERequest request, HttpServletRequest httpRequest) {
         try {
-            service.createRecursoEducativo(request);
+            service.createRecursoEducativo(request, httpRequest);
             return ResponseEntity.noContent().build();
         }catch (EntityNotFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -38,13 +39,14 @@ public class RecursoEducativoController {
         }
     }
 
-    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'DOCENTE)")
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'DOCENTE')")
     @PostMapping("/with-file")
     public ResponseEntity<?> createRecursoEducativoWithFile(
             @RequestPart("request") RERequest request,
-            @RequestPart("file") MultipartFile file) {
+            @RequestPart("file") MultipartFile file,
+            HttpServletRequest httpRequest) {
         try {
-            service.createRecursoEducativoWithFile(request, file);
+            service.createRecursoEducativoWithFile(request, file, httpRequest);
             return ResponseEntity.noContent().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
