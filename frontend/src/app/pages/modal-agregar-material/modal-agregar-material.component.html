@@ -4,29 +4,29 @@
     <button class="modal-close" id="modalClose">X</button>
   </div>
   <div class="modal-body">
-    <form id="addMaterialForm" action="">
+    <form [formGroup]="materialForm" id="addMaterialForm" action="" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="titulo">Titulo</label>
-        <input type="text" id="titulo" class="form-control" required>
+        <input type="text" id="titulo" class="form-control" required formControlName="titulo">
       </div>
       <div class="form-group">
         <label for="categoria">Categoria</label>
-        <select class="form-select" id="categoria" required>
+        <select class="form-select" id="categoria" required formControlName="cursoId">
           <option value>Seleccionar Categoria</option>
-          <option value="matematicas">Matemáticas</option>
-          <option value="ciencias">Ciencias</option>
-          <option value="historia">Historia</option>
-          <option value="idiomas">Idiomas</option>
-          <option value="tecnologia">Tecnología</option>
+          <option value="0">Matemáticas</option>
+          <option value="1">Innovación y Transformación Digital</option>
+          <option value="2">Historia</option>
+          <option value="3">Idiomas</option>
+          <option value="4">Tecnología</option>
         </select>
       </div>
       <div class="form-group">
         <label for="descripcion">Descripcion</label>
-        <textarea id="descripcion" class="form-control" rows="4" required></textarea>
+        <textarea id="descripcion" class="form-control" rows="4" required formControlName="descripcion"></textarea>
       </div>
       <div class="form-group">
         <label for="archivo">Archivo</label>
-        <input type="file" id="archivo" class="form-control" required>
+        <input (change)="onFileSelected($event)" type="file" id="archivo" class="form-control" required>
         <small>"Formatos permitidos: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, JPG, JPEG, PNG, GIF, MP4, MP3, ZIP. Tamaño máximo: 10MB."</small>
       </div>
       <div class="form-group">

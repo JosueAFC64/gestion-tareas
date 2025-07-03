@@ -7,6 +7,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.hd.GestionTareas.googledrive.service.GoogleDriveService;
 import org.springframework.core.io.ByteArrayResource;
@@ -37,6 +38,7 @@ public class RecursoEducativoController {
         }
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMINISTRADOR', 'DOCENTE)")
     @PostMapping("/with-file")
     public ResponseEntity<?> createRecursoEducativoWithFile(
             @RequestPart("request") RERequest request,
