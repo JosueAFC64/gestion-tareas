@@ -1,18 +1,46 @@
 <main class="container">
+
   <section>
-    <h2 class="section-titulo">Materiales Educativos</h2>
-    <div class="filtros" id="filtro-categoria">
-      <button (click)="setActive('todos')" class="filtro-btn active" id="todos">Todos</button>
-      <button (click)="setActive('matematicas')" class="filtro-btn" id="matematicas">Matemáticas</button>
-      <button (click)="setActive('ciencias')" class="filtro-btn" id="ciencias">Ciencias</button>
-      <button (click)="setActive('historia')" class="filtro-btn" id="historia">Historia</button>
-      <button (click)="setActive('idiomas')" class="filtro-btn" id="idiomas">Idiomas</button>
-      <button (click)="setActive('tecnologia')" class="filtro-btn" id="tecnologia">Tecnología</button>
+    <h2 class="section-titulo">📚 Materiales Educativos</h2>
+
+
+    <!-- 🔍 Filtros dinámicos -->
+    <div class="filtros-dinamicos">
+      <input type="text" [(ngModel)]="filtroTitulo" (ngModelChange)="filtrarRapido()" placeholder="🔍 Buscar por título...">
+      <input type="text" [(ngModel)]="filtroAutor" (ngModelChange)="filtrarRapido()" placeholder="👤 Buscar por autor...">
+    </div>
+
+    <!-- ⚙️ Filtros avanzados -->
+    <div class="filtros-avanzados">
+      <input type="date" [(ngModel)]="filtroFecha">
+      <select [(ngModel)]="ordenCampo">
+        <option value="titulo">Ordenar por Título</option>
+        <option value="fechaCreacion">Ordenar por Fecha</option>
+      </select>
+      <select [(ngModel)]="ordenDireccion">
+        <option value="asc">Ascendente</option>
+        <option value="desc">Descendente</option>
+      </select>
+      <button class="btn-buscar" (click)="aplicarFiltros()">Aplicar filtros</button>
     </div>
   </section>
+
   <section>
     <div class="materiales-grid" id="materialesGrid">
-      <div class="no-materiales">No hay materiales disponibles. ¡Agrega uno nuevo!</div>
+      <div *ngIf="materiales.length === 0" class="no-materiales">
+        No hay materiales disponibles. ¡Agrega uno nuevo!
+      </div>
+
+      <div *ngFor="let material of materiales" class="card-material">
+        <h3>{{ material.titulo }}</h3>
+        <p>{{ material.descripcion }}</p>
+        <p><strong>📁 Tipo:</strong> {{ material.tipo }}</p>
+        <p><strong>📘 Curso:</strong> {{ material.curso }}</p>
+        <p><strong>👤 Autor:</strong> {{ material.creador }}</p>
+        <p><strong>📅 Fecha:</strong> {{ material.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</p>
+        <a [href]="material.url" target="_blank" class="ver-archivo">📄 Ver archivo</a>
+      </div>
     </div>
   </section>
+
 </main>

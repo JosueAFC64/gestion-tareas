@@ -1,38 +1,44 @@
-<div class="modal">
-  <div class="modal-header">
-    <h2 class="modal-titulo" id="modalTitulo">Agregar Nuevo Material</h2>
-    <button class="modal-close" id="modalClose">X</button>
-  </div>
-  <div class="modal-body">
-    <form [formGroup]="materialForm" id="addMaterialForm" action="" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="titulo">Titulo</label>
-        <input type="text" id="titulo" class="form-control" required formControlName="titulo">
-      </div>
-      <div class="form-group">
-        <label for="categoria">Categoria</label>
-        <select class="form-select" id="categoria" required formControlName="cursoId">
-          <option value>Seleccionar Categoria</option>
-          <option value="0">Matemáticas</option>
-          <option value="1">Innovación y Transformación Digital</option>
-          <option value="2">Historia</option>
-          <option value="3">Idiomas</option>
-          <option value="4">Tecnología</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="descripcion">Descripcion</label>
-        <textarea id="descripcion" class="form-control" rows="4" required formControlName="descripcion"></textarea>
-      </div>
-      <div class="form-group">
-        <label for="archivo">Archivo</label>
-        <input (change)="onFileSelected($event)" type="file" id="archivo" class="form-control" required>
-        <small>"Formatos permitidos: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, JPG, JPEG, PNG, GIF, MP4, MP3, ZIP. Tamaño máximo: 10MB."</small>
-      </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary">Guardar Material</button>
-      </div>
-    </form>
+<div class="modal-custom">
+  <div class="modal-header-custom">
+    <h2 class="modal-title">📄 Agregar Nuevo Material</h2>
+    <button class="close-btn" (click)="cerrarModal()">×</button>
   </div>
 
+  <form [formGroup]="materialForm" (ngSubmit)="onSubmit()" class="modal-body-custom">
+
+    <div class="form-group">
+      <label for="titulo">Título del material</label>
+      <input type="text" id="titulo" formControlName="titulo" class="form-control" placeholder="Ej. Fundamentos de Angular">
+    </div>
+
+    <div class="form-group">
+      <label for="categoria">Categoría del curso</label>
+      <select id="categoria" formControlName="cursoId" class="form-select">
+        <option value="">Seleccionar...</option>
+        <option value="1">Matemáticas</option>
+        <option value="2">Innovación y Transformación Digital</option>
+        <option value="3">Historia</option>
+        <option value="4">Idiomas</option>
+        <option value="5">Tecnología</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción</label>
+      <textarea id="descripcion" formControlName="descripcion" class="form-control" rows="3" placeholder="Describe brevemente el contenido..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="archivo">Archivo (máx. 10MB)</label>
+      <input type="file" id="archivo" (change)="onFileSelected($event)" class="form-control" required>
+      <small class="file-note">Formatos válidos: PDF, DOCX, JPG, PNG, MP4, ZIP, etc.</small>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" [disabled]="isLoading" class="btn-submit">
+        <span *ngIf="!isLoading">📤 Subir Material</span>
+        <span *ngIf="isLoading">⏳ Subiendo...</span>
+      </button>
+    </div>
+  </form>
 </div>

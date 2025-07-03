@@ -1,25 +1,32 @@
 <body class="cuerpo">
-  <header>
-    <div class="container">
+<header>
+  <div class="container header-container">
+    <div class="logo">
+      <img src="/assets/img/logo.png" alt="Logo UTP Recursos">
+    </div>
+
+
+    <div class="usuario-wrapper">
       <div class="usuario">
-        <img src="/user-icon.svg" alt="">
-        <div class="user-name">Oscar Arotinco</div>
+        <span class="emoji-usuario">👤</span>
+        <span class="user-name">Bienvenido, {{ nombreUsuario }}</span>
       </div>
-      <div class="barra-buscar">
-        <input type="text" id="search-input" placeholder="Buscar materiales...">
-        <button id="btn-buscar"><i class="fas fa-search">Buscar</i></button>
-      </div>
+      <button class="btn-logout" (click)="logout()">Cerrar sesión 🔒</button>
     </div>
-  </header>
-  <nav>
-    <div class="container">
-      <ul>
-        <li><a [routerLink]="['./principal']">Inicio</a></li>
-        <li><a style="cursor: pointer" (click)="materialModal()">Agregar Material</a></li>
-        <li><a [routerLink]="['./materiales']">Mis Materiales</a></li>
-        <li><a [routerLink]="['./ayuda']">Ayuda</a></li>
-      </ul>
-    </div>
-  </nav>
-  <router-outlet></router-outlet>
+  </div>
+</header>
+
+
+<nav>
+  <div class="container">
+    <ul>
+      <li><a [routerLink]="['./principal']">Inicio</a></li>
+      <li><a style="cursor: pointer" (click)="materialModal()">Agregar Material</a></li>
+      <li><a [routerLink]="['./materiales']">Mis Materiales</a></li>
+      <li><a [routerLink]="['./ayuda']">Ayuda</a></li>
+    </ul>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>
 </body>
