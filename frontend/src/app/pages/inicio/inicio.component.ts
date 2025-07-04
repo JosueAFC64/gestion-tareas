@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import {AuthService} from '../../services/auth.service';
 import {RESummaryResponse} from '../../models/resumen-material.model';
 import {CommonModule} from '@angular/common';
@@ -19,7 +20,7 @@ export class InicioComponent implements OnInit {
   ordenDireccion: 'asc' | 'desc' = 'asc';
   materiales: RESummaryResponse[] = [];
 
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService, private http: HttpClient) {
   }
 
   ngOnInit(): void {
@@ -122,6 +123,23 @@ export class InicioComponent implements OnInit {
         this.materiales = filtrado;
       },
       error: err => console.error(err)
+    });
+  }
+
+  eliminarMaterial(id: number): void {
+    if (!confirm('¿Estás seguro de eliminar este material?')) return;
+
+    const url = `http://localhost:8080/api/v1/recursos-educativos/${id}`;
+
+    this.http.delete(url, { withCredentials: true }).subscribe({
+      next: () => {
+        this.materiales = this.materiales.filter(m => m.id !== id);
+        alert('Material eliminado correctamente');
+      },
+      error: (err) => {
+        console.error('Error al eliminar:', err);
+        alert('Error al eliminar el material: ' + err.message);
+      }
     });
   }
 

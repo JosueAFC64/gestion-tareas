@@ -38,7 +38,8 @@
         <p><strong>📘 Curso:</strong> {{ material.curso }}</p>
         <p><strong>👤 Autor:</strong> {{ material.creador }}</p>
         <p><strong>📅 Fecha:</strong> {{ material.fechaCreacion | date: 'dd/MM/yyyy HH:mm' }}</p>
-        <a [href]="material.url" target="_blank" class="ver-archivo">📄 Ver archivo</a>
+        <a [href]="material.url" target="_blank" class="ver-archivo mr-10">📄 Ver archivo</a>
+        <button (click)="eliminarMaterial(material.id)" class="eliminar-archivo">❌ Eliminar archivo</button>
       </div>
     </div>
   </section>

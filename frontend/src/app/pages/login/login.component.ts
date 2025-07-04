@@ -8,7 +8,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card'
 import {Router, RouterModule} from '@angular/router';
-import {routes} from '../../app.routes';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +40,7 @@ export class LoginComponent {
     this.auth.login(this.loginForm.value).subscribe({
       next: () => {
         this.router.navigate(['inicio/principal'])
-        alert('Login exitoso')},
+        },
       error: () => alert('Error al iniciar sesión')
     });
   }

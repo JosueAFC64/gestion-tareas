@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -208,6 +207,7 @@ public class RecursoEducativoService {
      *
      * @param id Id del recurso educativo a eliminar
      */
+    @Transactional
     public void deleteRecursoEducativo(Long id) throws IOException, GeneralSecurityException {
         RecursosEducativo recursoEducativo = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Recurso no encontrado"));

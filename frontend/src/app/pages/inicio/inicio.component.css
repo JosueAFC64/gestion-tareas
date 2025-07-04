@@ -5,6 +5,10 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+.mr-10{
+  margin-right: 10px;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -86,8 +90,23 @@
   font-size: 14px;
 }
 
+.eliminar-archivo{
+  display: inline-block;
+  margin-top: 10px;
+  background-color: #c0392b;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 14px;
+}
+
 .ver-archivo:hover {
   background-color: #38598b;
+}
+
+.eliminar-archivo:hover{
+  background-color: #e74c3c;
 }
 
 
