@@ -2,6 +2,8 @@ package com.hd.GestionTareas.recursoseducativos.service;
 
 import com.hd.GestionTareas.TipoRecurso;
 import com.hd.GestionTareas.auth.service.JwtService;
+import com.hd.GestionTareas.categoria.repository.Categoria;
+import com.hd.GestionTareas.categoria.repository.CategoriaRepository;
 import com.hd.GestionTareas.curso.repository.Curso;
 import com.hd.GestionTareas.curso.repository.CursoRepository;
 import com.hd.GestionTareas.recursoseducativos.controller.RERequest;
@@ -31,6 +33,7 @@ public class RecursoEducativoService {
 
     private final RecursoEducativoRepository repository;
     private final CursoRepository cursoRepository;
+    private final CategoriaRepository categoriaRepository;
     private final UserRepository userRepository;
     private final GoogleDriveService driveService;
     private final JwtService jwtService;
@@ -50,6 +53,8 @@ public class RecursoEducativoService {
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
         Curso curso = cursoRepository.findById(request.cursoId())
                 .orElseThrow(() -> new EntityNotFoundException("Curso no encontrado"));
+        Categoria categoria = categoriaRepository.findById(request.categoriaId())
+                .orElseThrow(() -> new EntityNotFoundException("Categoria no encontrada"));
 
         RecursosEducativo recursoEducativoNuevo = RecursosEducativo.builder()
                 .titulo(request.titulo())
@@ -58,6 +63,7 @@ public class RecursoEducativoService {
                 .url(request.url())
                 .creador(creador)
                 .curso(curso)
+                .categoria(categoria)
                 .build();
 
         repository.save(recursoEducativoNuevo);
@@ -80,6 +86,8 @@ public class RecursoEducativoService {
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
         Curso curso = cursoRepository.findById(request.cursoId())
                 .orElseThrow(() -> new EntityNotFoundException("Curso no encontrado"));
+        Categoria categoria = categoriaRepository.findById(request.categoriaId())
+                .orElseThrow(() -> new EntityNotFoundException("Categoria no encontrada"));
 
         // Subir archivo a Google Drive
         String fileId = driveService.uploadFile(file);
@@ -93,6 +101,7 @@ public class RecursoEducativoService {
                 .googleDriveFileId(fileId)
                 .creador(creador)
                 .curso(curso)
+                .categoria(categoria)
                 .build();
 
         repository.save(recursoEducativoNuevo);
@@ -198,6 +207,7 @@ public class RecursoEducativoService {
                         re.getUrl(),
                           re.getCreador().getNombres(),
                         re.getCurso().getNombre(),
+                        re.getCategoria().getNombre(),
                         re.getFechaCreacion()
                 )).toList();
     }
@@ -221,11 +231,11 @@ public class RecursoEducativoService {
     }
 
     public List<RESummaryResponse> buscarPorTitulo(String titulo) {
-        return repository.findByTituloContainingIgnoreCase(titulo);
+        return repository.filtrarResumen(titulo, null, null, null, null);
     }
 
-    public List<RESummaryResponse> filtrarRecursosEducativos(String titulo, TipoRecurso tipo, Long cursoId, Long creadorId) {
-        return repository.filtrarResumen(titulo, tipo, cursoId, creadorId);
+    public List<RESummaryResponse> filtrarRecursosEducativos(String titulo, TipoRecurso tipo, Long cursoId, Long creadorId, Long categoriaId) {
+        return repository.filtrarResumen(titulo, tipo, cursoId, creadorId, categoriaId);
     }
 
 }

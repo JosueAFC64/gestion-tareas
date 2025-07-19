@@ -110,9 +110,10 @@ public class RecursoEducativoController {
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) TipoRecurso tipo,
             @RequestParam(required = false) Long cursoId,
-            @RequestParam(required = false) Long creadorId
+            @RequestParam(required = false) Long creadorId,
+            @RequestParam(required = false) Long categoriaId
     ) {
-        return ResponseEntity.ok(service.filtrarRecursosEducativos(titulo, tipo, cursoId, creadorId));
+        return ResponseEntity.ok(service.filtrarRecursosEducativos(titulo, tipo, cursoId, creadorId, categoriaId));
     }
 
     @GetMapping("/buscar")

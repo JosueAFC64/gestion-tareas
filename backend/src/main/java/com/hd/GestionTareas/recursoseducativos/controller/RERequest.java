@@ -7,6 +7,7 @@ public record RERequest(
         String descripcion,
         TipoRecurso tipo,
         String url,
-        Long cursoId
+        Long cursoId,
+        Long categoriaId
 ) {
 }

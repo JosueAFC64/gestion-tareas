@@ -1,6 +1,7 @@
 package com.hd.GestionTareas.recursoseducativos.repository;
 
 import com.hd.GestionTareas.TipoRecurso;
+import com.hd.GestionTareas.categoria.repository.Categoria;
 import com.hd.GestionTareas.curso.repository.Curso;
 import com.hd.GestionTareas.user.repository.User;
 import jakarta.persistence.*;
@@ -57,5 +58,9 @@ public class RecursosEducativo {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curso_id")
     private Curso curso;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
 
 }

@@ -12,5 +12,6 @@ public record RESummaryResponse(
         String url,
         String creador,
         String curso,
+        String nombreCategoria,
         LocalDateTime fechaCreacion
 ) {}

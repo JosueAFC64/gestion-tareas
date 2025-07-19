@@ -12,8 +12,6 @@ import java.util.List;
 public interface RecursoEducativoRepository extends JpaRepository<RecursosEducativo, Long> {
     List<RecursosEducativo> findByCurso_Id(Long cursoId);
 
-    List<RESummaryResponse> findByTituloContainingIgnoreCase(String titulo);
-
     @Query("""
     SELECT new com.hd.GestionTareas.recursoseducativos.controller.RESummaryResponse(
         r.id,
@@ -23,6 +21,7 @@ public interface RecursoEducativoRepository extends JpaRepository<RecursosEducat
         r.url,
         r.creador.nombres,
         r.curso.nombre,
+        r.categoria.nombre,
         r.fechaCreacion
     )
     FROM RecursosEducativo r
@@ -30,12 +29,14 @@ public interface RecursoEducativoRepository extends JpaRepository<RecursosEducat
       AND (:tipo IS NULL OR r.tipo = :tipo)
       AND (:cursoId IS NULL OR r.curso.id = :cursoId)
       AND (:creadorId IS NULL OR r.creador.id = :creadorId)
+      AND (:categoriaId IS NULL OR r.categoria.id = :categoriaId)
 """)
     List<RESummaryResponse> filtrarResumen(
             @Param("titulo") String titulo,
             @Param("tipo") TipoRecurso tipo,
             @Param("cursoId") Long cursoId,
-            @Param("creadorId") Long creadorId
+            @Param("creadorId") Long creadorId,
+            @Param("categoriaId") Long categoriaId
     );
 
 }
